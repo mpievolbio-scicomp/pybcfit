@@ -11,8 +11,19 @@ import matplotlib.pyplot as plt
 from scipy.stats import norm
 
 
-def inferFitness(barcodes,cycleTimes,allReads,outputFolder=None,experimentName=None,neutralBarcodes=None,
-                 multNoiseThresh=3e3,zCutoff=2.7,multNoiseBase=0.1,lowCoverageThresh=5e5,sparsityThresh=None):
+def inferFitness(barcodes,
+                 cycleTimes,
+                 allReads,
+                 outputFolder=None,
+                 experimentName=None,
+                 neutralBarcodes=None,
+                 multNoiseThresh=3e3,
+                 zCutoff=2.7,
+                 multNoiseBase=0.1,
+                 lowCoverageThresh=5e5,
+                 sparsityThresh=None,
+                ):
+                 
     """
     inferFitness - main fitness inference function. Expects barcodes, cycle times, and reads; returns dictionary of
     fitness inference data for all replicates. See Venkataram et. al. Cell 2016 for details of fitness assay algorithm.
@@ -63,6 +74,10 @@ def inferFitness(barcodes,cycleTimes,allReads,outputFolder=None,experimentName=N
 
     # filter out low coverage/sparse timepoints
     filteredCycleTimes,filteredReads = filterTimepoints(cycleTimes,allReads,lowCoverageThresh,sparsityThresh)
+    
+    for k,v in filteredCycleTimes.items():
+        if len(v) == 0:
+            raise RuntimeError("Found coverage below threshold in replicate {}, adjust lowCoverageThresh or discard this replicate.".format(k))
 
     # set neutral indices (boolean array)
 
